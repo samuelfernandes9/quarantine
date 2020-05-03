@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NativeGeocoder, NativeGeocoderOptions, NativeGeocoderResult } from '@ionic-native/native-geocoder/ngx';
 import { LoadingController } from '@ionic/angular';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class NeedHelpPage implements OnInit {
   contactNo : Number;
   helpText : String;
 
-  constructor(private geolocation : Geolocation, private nativeGeocoder: NativeGeocoder, public loadingCtrl: LoadingController) { }
+  constructor(private router : Router,private geolocation : Geolocation, private nativeGeocoder: NativeGeocoder, public loadingCtrl: LoadingController) { }
 
   ngOnInit() {
   }
@@ -112,6 +113,11 @@ export class NeedHelpPage implements OnInit {
       duration: 2000
     });
     await loading.present();
+  }
+
+  gotoPost()
+  {
+    this.router.navigateByUrl('/posts')
   }
 
 }
