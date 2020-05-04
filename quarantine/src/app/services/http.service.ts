@@ -13,4 +13,9 @@ export class HttpService {
   {
     return this.http.get('https://us-central1-quarantine-275006.cloudfunctions.net/function-1')
   }
+
+  getMessages()
+  {
+    return this.http.get('https://us-central1-quarantine-13853.cloudfunctions.net/messages')
+  }
 }
