@@ -4,6 +4,8 @@ import { LoadingController } from '@ionic/angular';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Storage } from '@ionic/storage';
+import { HttpService } from 'src/app/services/http.service';
 
 
 
@@ -29,8 +31,10 @@ export class NeedHelpPage implements OnInit {
   linkedIn: any;
   industry: any;
   normalForm: FormGroup;
+  userID: string;
+  helpInfo: any;
   
-  constructor(private formBuilder: FormBuilder,private router : Router,private geolocation : Geolocation, private nativeGeocoder: NativeGeocoder, public loadingCtrl: LoadingController) { 
+  constructor(private http : HttpService,private storage : Storage,private formBuilder: FormBuilder,private router : Router,private geolocation : Geolocation, private nativeGeocoder: NativeGeocoder, public loadingCtrl: LoadingController) { 
     this.jobForm = formBuilder.group({
       designation: [this.designation, Validators.compose([Validators.maxLength(100), Validators.pattern('^[\u0600-\u06FFa-zA-Z ]*$'), Validators.required])],
       experience: [this.experience, Validators.compose([Validators.maxLength(30),Validators.pattern('[0-9]+'), Validators.required])],
@@ -106,6 +110,21 @@ export class NeedHelpPage implements OnInit {
     show:false
   }
 ]
+
+  this.storage.get('UserStore').then(usrstr=>{
+    console.log("userstore",usrstr)
+    let User_Store =    {
+      "name": "Samuel",
+      "locality": "Bhandup",
+      "email": "samuel9.edu@gmail.com",
+      "account_type": "others",
+      "shop": {}
+  }
+
+  this.userID= "1"
+
+  
+  })
   }
 
   selectReq(data,index)
@@ -187,13 +206,52 @@ export class NeedHelpPage implements OnInit {
 
   submit()
   {
+   this.helpText = this.normalForm.get('helpText').value || ""
+   this.contactNo = this.normalForm.get('contactNo').value || ""
+   this.location = this.normalForm.get('location').value || ""
+   this.experience = this.jobForm.get('experience').value || ""
+   this.linkedIn = this.jobForm.get('experience').value || ""
+   this.designation = this.jobForm.get('designation').value || ""
+   this.industry = this.jobForm.get('industry').value || ""
+
+
+
+
+   
+
+   console.log("helpinfo",this.helpInfo)
 if(this.helpFor=='Job Layoffs' && this.jobForm.valid)
-{
+{let body = {
+  "user_id":"1",
+  "jobs_user_exp" : this.experience,
+  "linked_in_profile_link" : this.linkedIn,
+  "current_designation" : this.designation,
+  "industry" : this.industry,
+  "current_company" : "",
+  "jobs_user_name" : "",
+}
+this.http.helpPost(body).subscribe(res=>{
+  if(res){
+    console.log("res",res)
+  }
+})
   console.log("Job Form successfully submitted")
 }
 else if(this.helpFor!='Job Layoffs' && this.normalForm.valid)
 {
   console.log("Normal form submitted successfully")
+  let body = {
+    "user_id":"1",
+    "help_for":this.helpFor,
+    "help_info": this.helpText,
+    "phone_no": this.contactNo,
+    "locality": this.location
+  }
+  this.http.helpPost(body).subscribe(res=>{
+    if(res){
+      console.log("res",res)
+    }
+  })
 } 
 else
 {

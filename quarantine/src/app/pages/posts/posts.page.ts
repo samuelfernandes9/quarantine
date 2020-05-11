@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-posts',
@@ -9,30 +10,24 @@ import { HttpClient } from '@angular/common/http';
 export class PostsPage implements OnInit {
   postsArray: any
   jsonURL: string;
+  userId: number;
 
-  constructor(private http : HttpClient) { }
+  constructor(private http : HttpService) { }
 
   ngOnInit() {
   }
 
   ionViewWillEnter()
   {
-    this.jsonURL = '../../../assets/posts.json';
-    // this.postsArray = [
-    //   {
-    //     "postTitle" : "Food Request",
-    //     "description" : "Provide food kits"
-    //   },
-    //   {
-    //     "postTitle" : "Medical Help",
-    //     "description" : "Feeling uneasy. Need some medication"
-    //   }
-    // ]
-    this.http.get(this.jsonURL).subscribe(res=>{
-      console.log("response",res)
-      this.postsArray = res
+    
+    this.userId = 1;                //this value will be replaced later 
+    this.http.postsGet(this.userId).subscribe(res=>{
+      if(res)
+      {
+        console.log("resss",res)
+        this.postsArray = res['data']
+      }
     })
-
   
   }
 
@@ -42,22 +37,31 @@ export class PostsPage implements OnInit {
   resolve(data)
   { 
     let body = {
-        "resolve" : true,
-        "delete"  : "",
-        "help_id" : "",
-        "user_id" : ""
+      current_company: data.current_company,
+      current_designation: data.current_designation,
+      delete: data.delete,
+      help_for: data.help_for,
+      help_id: data.help_id,
+      help_info: data.help_info,
+      industry: data.industry,
+      jobs_user_exp: data.jobs_user_exp,
+      jobs_user_name: data.jobs_user_name,
+      linked_in_profile_link: data.linked_in_profile_link,
+      locality: data.locality,
+      phone_no: data.phone_no,
+      resolve: true,
+      spam: data.spam,
+      user_id: data.user_id
         }
 
-        let options= {
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        }
+       
     
     console.log("data",data)  
     if(!data.resolve)
     {
-        this.http.put(this.jsonURL,body,options).subscribe(res=>{
-          console.log("after put",res)
-        })
+       this.http.resolvePut(body).subscribe(res=>{
+         console.log("responsee",res)
+       })
     }  
     else
     {
@@ -79,9 +83,9 @@ export class PostsPage implements OnInit {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
       }
 
-      this.http.put(this.jsonURL,body,options).subscribe(res=>{
-        console.log("after put",res)
-      })
+      // this.http.put(this.jsonURL,body,options).subscribe(res=>{
+      //   console.log("after put",res)
+      // })
   }
 
 
